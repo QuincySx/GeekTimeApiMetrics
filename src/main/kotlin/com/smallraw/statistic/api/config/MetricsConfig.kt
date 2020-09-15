@@ -1,9 +1,6 @@
 package com.smallraw.statistic.api.config
 
-import com.smallraw.statistic.api.metrics.ConsoleReporter
-import com.smallraw.statistic.api.metrics.MetricsCollector
-import com.smallraw.statistic.api.metrics.MetricsStorage
-import com.smallraw.statistic.api.metrics.RedisMetricsStorage
+import com.smallraw.statistic.api.metrics.*
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,7 +15,7 @@ class MetricsConfig {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
     fun getMetricsStorage(): MetricsStorage {
-        return RedisMetricsStorage()
+        return MemoryMetricsStorage()
     }
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -29,14 +26,14 @@ class MetricsConfig {
         return consoleReporter
     }
 
-//    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-//    @Bean
-//    fun getEmailReporter(metricsStorage: MetricsStorage): EmailReporter {
-//        val emailReporter = EmailReporter(metricsStorage)
-//        emailReporter.addToAddress("wangzheng@xzg.com")
-//        emailReporter.startDailyReport()
-//        return emailReporter
-//    }
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Bean
+    fun getEmailReporter(metricsStorage: MetricsStorage): EmailReporter {
+        val emailReporter = EmailReporter(metricsStorage)
+        emailReporter.addToAddress("wangzheng@xzg.com")
+        emailReporter.startDailyReport()
+        return emailReporter
+    }
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
