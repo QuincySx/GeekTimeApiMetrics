@@ -2,34 +2,35 @@ package com.smallraw.statistic.api.config
 
 import com.smallraw.statistic.api.metrics.*
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
-import org.springframework.boot.WebApplicationType
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
+import javax.annotation.Resource
 
 
 @Configuration
 class MetricsConfig {
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Bean
-    fun getMetricsStorage(): MetricsStorage {
-        return MemoryMetricsStorage()
-    }
+//    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+//    @Bean
+//    fun getMetricsStorage(): MetricsStorage {
+//        return MemoryMetricsStorage()
+//    }
+
+    @Resource(name = "metricsStorage")
+    private lateinit var mMetricsStorage: MetricsStorage
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
-    fun getConsoleReporter(metricsStorage: MetricsStorage): ConsoleReporter {
-        val consoleReporter = ConsoleReporter(metricsStorage)
+    fun getConsoleReporter(): ConsoleReporter {
+        val consoleReporter = ConsoleReporter(mMetricsStorage)
         consoleReporter.startRepeatedReport(60, 60)
         return consoleReporter
     }
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
-    fun getEmailReporter(metricsStorage: MetricsStorage): EmailReporter {
-        val emailReporter = EmailReporter(metricsStorage)
+    fun getEmailReporter(): EmailReporter {
+        val emailReporter = EmailReporter(mMetricsStorage)
         emailReporter.addToAddress("wangzheng@xzg.com")
         emailReporter.startDailyReport()
         return emailReporter
@@ -37,7 +38,7 @@ class MetricsConfig {
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
-    fun getMetricsCollector(metricsStorage: MetricsStorage): MetricsCollector {
-        return MetricsCollector(metricsStorage)
+    fun getMetricsCollector(): MetricsCollector {
+        return MetricsCollector(mMetricsStorage)
     }
 }
