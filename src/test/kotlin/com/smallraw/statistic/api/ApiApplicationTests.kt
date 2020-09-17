@@ -15,11 +15,14 @@ class ApiApplicationTests {
     @Test
     fun testMetrics() {
         val storage: MetricsStorage = RedisMetricsStorage()
-        val consoleReporter = ConsoleReporter(storage)
+        val aggregator = Aggregator()
+
+        val consoleViewer = ConsoleViewer()
+
+        val consoleReporter = ConsoleReporter(storage, aggregator, consoleViewer)
+
         consoleReporter.startRepeatedReport(60, 60)
-        val emailReporter = EmailReporter(storage)
-        emailReporter.addToAddress("wangzheng@xzg.com")
-        emailReporter.startDailyReport()
+
         val collector = MetricsCollector(storage)
         collector.recordRequest(RequestInfo("register", 123.0, 10234))
         collector.recordRequest(RequestInfo("register", 223.0, 11234))

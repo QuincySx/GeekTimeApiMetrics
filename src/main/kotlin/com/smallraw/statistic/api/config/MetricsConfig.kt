@@ -22,18 +22,11 @@ class MetricsConfig {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
     fun getConsoleReporter(): ConsoleReporter {
-        val consoleReporter = ConsoleReporter(mMetricsStorage)
+        val aggregator = Aggregator()
+        val consoleViewer = ConsoleViewer()
+        val consoleReporter = ConsoleReporter(mMetricsStorage, aggregator, consoleViewer)
         consoleReporter.startRepeatedReport(60, 60)
         return consoleReporter
-    }
-
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Bean
-    fun getEmailReporter(): EmailReporter {
-        val emailReporter = EmailReporter(mMetricsStorage)
-        emailReporter.addToAddress("wangzheng@xzg.com")
-        emailReporter.startDailyReport()
-        return emailReporter
     }
 
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
