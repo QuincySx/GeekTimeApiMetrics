@@ -10,7 +10,7 @@ data class Response(
             return Response(200, msg, data)
         }
 
-        fun failure(code: Int, msg: String, data: Any? = null): Response {
+        fun failure(code: Int = 400, msg: String = "Unknown", data: Any? = null): Response {
             return Response(code, msg, data)
         }
     }

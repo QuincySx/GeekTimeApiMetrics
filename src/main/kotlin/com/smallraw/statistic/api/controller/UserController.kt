@@ -17,9 +17,6 @@ import javax.validation.constraints.Size
 
 @RestController
 class UserController {
-    @Autowired
-    lateinit var mMetrics: MetricsCollector
-
     val content = AtomicLong(1000)
 
     @RequestMapping("/login", method = [RequestMethod.GET])
@@ -27,20 +24,12 @@ class UserController {
             @RequestParam(value = "name", required = true) @Size(max = 10) name: String,
             @RequestParam(value = "password", required = true) @Size(max = 10) password: String
     ): Response {
-        val startTimestamp = System.currentTimeMillis()
-        return Response.success("success", UserDTO(content.addAndGet(1), name)).also {
-            val respTime = System.currentTimeMillis() - startTimestamp
-            mMetrics.recordRequest(RequestInfo("login", respTime.toDouble(), startTimestamp))
-        }
+        return Response.success("success", UserDTO(content.addAndGet(1), name))
     }
 
     @RequestMapping("/register", method = [RequestMethod.GET, RequestMethod.POST])
     fun register(user: UserVo): Response {
-        val startTimestamp = System.currentTimeMillis()
         Thread.sleep(SecureRandom().nextInt(100).toLong())
-        return Response.success("success", UserDTO(content.addAndGet(1), user.name)).also {
-            val respTime = System.currentTimeMillis() - startTimestamp
-            mMetrics.recordRequest(RequestInfo("regsiter", respTime.toDouble(), startTimestamp))
-        }
+        return Response.success("success", UserDTO(content.addAndGet(1), user.name))
     }
 }
