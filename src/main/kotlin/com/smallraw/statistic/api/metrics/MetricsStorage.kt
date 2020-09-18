@@ -3,6 +3,7 @@ package com.smallraw.statistic.api.metrics
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
 import java.io.Serializable
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.streams.toList
 
 
@@ -48,7 +49,9 @@ class RedisMetricsStorage : MetricsStorage {
 }
 
 class MemoryMetricsStorage : MetricsStorage {
-    private val mRequestInfoMap = mutableMapOf<String, MutableList<RequestInfo>>()
+    companion object {
+        private val mRequestInfoMap = ConcurrentHashMap<String, MutableList<RequestInfo>>()
+    }
 
     override fun saveRequestInfo(requestInfo: RequestInfo) {
         mRequestInfoMap.putIfAbsent(requestInfo.apiName, mutableListOf())

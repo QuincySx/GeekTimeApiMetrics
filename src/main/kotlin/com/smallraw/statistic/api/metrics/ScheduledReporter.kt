@@ -17,6 +17,9 @@ abstract class ScheduledReporter(protected var metricsStorage: MetricsStorage, p
 
 class ConsoleReporter(metricsStorage: MetricsStorage, aggregator: Aggregator, viewer: StatViewer)
     : ScheduledReporter(metricsStorage, aggregator, viewer) {
+
+    constructor() : this(RedisMetricsStorage(), Aggregator(), ConsoleViewer())
+
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
     fun startRepeatedReport(periodInSeconds: Long, durationInSeconds: Long) {
@@ -31,6 +34,9 @@ class ConsoleReporter(metricsStorage: MetricsStorage, aggregator: Aggregator, vi
 
 class EmailReporter(metricsStorage: MetricsStorage, aggregator: Aggregator, viewer: StatViewer)
     : ScheduledReporter(metricsStorage, aggregator, viewer) {
+
+    constructor(emailSender: EmailSender) : this(RedisMetricsStorage(), Aggregator(), EmailViewer(emailSender))
+
     fun startDailyReport() {
         val firstTime = trimTimeFieldsToZeroOfNextDay()
         val timer = Timer()
