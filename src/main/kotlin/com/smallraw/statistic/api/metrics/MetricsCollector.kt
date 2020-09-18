@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import java.io.Serializable
 
 
+//基于接口而非实现编程
 class MetricsCollector(private val metricsStorage: MetricsStorage = MemoryMetricsStorage()) : CoroutineScope by MainScope() {
     private val mChannel = Channel<RequestInfo>(256)
 
@@ -20,7 +21,6 @@ class MetricsCollector(private val metricsStorage: MetricsStorage = MemoryMetric
         }
     }
 
-    //基于接口而非实现编程
     //用一个函数代替了最小原型中的两个函数
     fun recordRequest(requestInfo: RequestInfo) {
         if (requestInfo.apiName.isBlank()) {

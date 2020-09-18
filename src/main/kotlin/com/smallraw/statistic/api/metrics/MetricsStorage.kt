@@ -24,20 +24,20 @@ class RedisMetricsStorage : MetricsStorage {
         serializableRedisTemplate.opsForHash<String, List<RequestInfo>>().put("api", requestInfo.apiName, list)
     }
 
-    override fun getRequestInfos(apiName: String, startTimestamp: Long, endTimestamp: Long): List<RequestInfo> {
+    override fun getRequestInfos(apiName: String, startTimeInMillis: Long, endTimeInMillis: Long): List<RequestInfo> {
         val redisValues = serializableRedisTemplate.opsForHash<String, List<RequestInfo>>().get("api", apiName)
                 ?: arrayListOf()
         return redisValues.parallelStream().filter {
-            it.timestamp in startTimestamp..endTimestamp
+            it.timestamp in startTimeInMillis..endTimeInMillis
         }.toList()
     }
 
-    override fun getRequestInfos(startTimestamp: Long, endTimestamp: Long): Map<String, List<RequestInfo>> {
+    override fun getRequestInfos(startTimeInMillis: Long, endTimeInMillis: Long): Map<String, List<RequestInfo>> {
         val redisValues = serializableRedisTemplate.opsForHash<String, List<RequestInfo>>().values("api")
         val result = HashMap<String, List<RequestInfo>>()
         redisValues.forEach {
             val resultList = it.parallelStream().filter { requestInfo ->
-                requestInfo.timestamp in startTimestamp..endTimestamp
+                requestInfo.timestamp in startTimeInMillis..endTimeInMillis
             }.toList()
             if (resultList.isNotEmpty()) {
                 result[resultList[0].apiName] = resultList
@@ -55,19 +55,19 @@ class MemoryMetricsStorage : MetricsStorage {
         mRequestInfoMap[requestInfo.apiName]?.add(requestInfo)
     }
 
-    override fun getRequestInfos(apiName: String, startTimestamp: Long, endTimestamp: Long): List<RequestInfo> {
+    override fun getRequestInfos(apiName: String, startTimeInMillis: Long, endTimeInMillis: Long): List<RequestInfo> {
         val redisValues = mRequestInfoMap[apiName] ?: arrayListOf()
 
         return redisValues.parallelStream().filter {
-            it.timestamp in startTimestamp..endTimestamp
+            it.timestamp in startTimeInMillis..endTimeInMillis
         }.toList()
     }
 
-    override fun getRequestInfos(startTimestamp: Long, endTimestamp: Long): Map<String, List<RequestInfo>> {
+    override fun getRequestInfos(startTimeInMillis: Long, endTimeInMillis: Long): Map<String, List<RequestInfo>> {
         val result = HashMap<String, List<RequestInfo>>()
         mRequestInfoMap.values.forEach {
             val resultList = it.parallelStream().filter { requestInfo ->
-                requestInfo.timestamp in startTimestamp..endTimestamp
+                requestInfo.timestamp in startTimeInMillis..endTimeInMillis
             }.toList()
             if (resultList.isNotEmpty()) {
                 result[resultList[0].apiName] = resultList
